@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="distributed-lock" />
+        <module name="queue-core" />
+        <module name="queue-extension" />
+        <module name="QueueBackup" />
+        <module name="QueueCore" />
+        <module name="QueueMonitor" />
+      </profile>
+      <profile name="Annotation profile for queue" enabled="true">
+        <sourceOutputDir name="../QueueExtension/target/generated-sources/annotations" />
+        <sourceTestOutputDir name="../QueueExtension/target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="QueueExtension" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="distributed-lock" target="1.8" />
+      <module name="KMQueue" target="1.8" />
+      <module name="queue-core" target="1.8" />
+      <module name="queue-extension" target="1.8" />
+      <module name="QueueBackup" target="1.5" />
+      <module name="QueueCore" target="1.8" />
+      <module name="QueueExtension" target="1.8" />
+      <module name="QueueMonitor" target="1.5" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

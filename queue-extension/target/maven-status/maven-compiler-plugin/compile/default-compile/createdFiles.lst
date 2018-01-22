@@ -1,0 +1,4 @@
+com\kingsoft\wps\mail\queue\extension\monitor\BackupQueueMonitor$Builder.class
+com\kingsoft\wps\mail\queue\extension\monitor\BackupQueueMonitor$1.class
+com\kingsoft\wps\mail\queue\extension\monitor\BackupQueueMonitor.class
+com\kingsoft\wps\mail\queue\extension\monitor\Pipeline.class

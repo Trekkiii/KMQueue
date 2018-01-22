@@ -1,0 +1,16 @@
+com\kingsoft\wps\mail\utils\Assert.class
+com\kingsoft\wps\mail\queue\KMQueueManager.class
+com\kingsoft\wps\mail\queue\config\Constant.class
+com\kingsoft\wps\mail\queue\RedisTaskQueue.class
+com\kingsoft\wps\mail\queue\backup\RedisBackupQueue.class
+com\kingsoft\wps\mail\queue\KMQueueManager$1.class
+com\kingsoft\wps\mail\queue\KMQueueManager$Builder.class
+com\kingsoft\wps\mail\exception\ErrorMessage.class
+com\kingsoft\wps\mail\utils\KMQUtils.class
+com\kingsoft\wps\mail\queue\Task$TaskStatus.class
+com\kingsoft\wps\mail\queue\TaskHandler.class
+com\kingsoft\wps\mail\queue\KMQueueAdapter.class
+com\kingsoft\wps\mail\queue\backup\BackupQueue.class
+com\kingsoft\wps\mail\queue\Task.class
+com\kingsoft\wps\mail\queue\TaskQueue.class
+com\kingsoft\wps\mail\exception\NestedException.class

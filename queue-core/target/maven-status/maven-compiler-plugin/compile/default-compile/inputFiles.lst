@@ -1,0 +1,13 @@
+D:\IdeaProjects\KMQueue\queue-core\src\main\java\com\kingsoft\wps\mail\queue\KMQueueManager.java
+D:\IdeaProjects\KMQueue\queue-core\src\main\java\com\kingsoft\wps\mail\queue\backup\RedisBackupQueue.java
+D:\IdeaProjects\KMQueue\queue-core\src\main\java\com\kingsoft\wps\mail\queue\TaskHandler.java
+D:\IdeaProjects\KMQueue\queue-core\src\main\java\com\kingsoft\wps\mail\queue\config\Constant.java
+D:\IdeaProjects\KMQueue\queue-core\src\main\java\com\kingsoft\wps\mail\queue\Task.java
+D:\IdeaProjects\KMQueue\queue-core\src\main\java\com\kingsoft\wps\mail\utils\Assert.java
+D:\IdeaProjects\KMQueue\queue-core\src\main\java\com\kingsoft\wps\mail\queue\RedisTaskQueue.java
+D:\IdeaProjects\KMQueue\queue-core\src\main\java\com\kingsoft\wps\mail\queue\KMQueueAdapter.java
+D:\IdeaProjects\KMQueue\queue-core\src\main\java\com\kingsoft\wps\mail\exception\ErrorMessage.java
+D:\IdeaProjects\KMQueue\queue-core\src\main\java\com\kingsoft\wps\mail\queue\backup\BackupQueue.java
+D:\IdeaProjects\KMQueue\queue-core\src\main\java\com\kingsoft\wps\mail\utils\KMQUtils.java
+D:\IdeaProjects\KMQueue\queue-core\src\main\java\com\kingsoft\wps\mail\exception\NestedException.java
+D:\IdeaProjects\KMQueue\queue-core\src\main\java\com\kingsoft\wps\mail\queue\TaskQueue.java
