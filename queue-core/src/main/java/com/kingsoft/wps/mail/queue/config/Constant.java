@@ -5,6 +5,10 @@ package com.kingsoft.wps.mail.queue.config;
  */
 public class Constant {
 
+    //    private static final String DISTR_LOCK_SUFFIX = "_lock";
+    // 用于队列任务唯一性标记，redis set key
+    public static final String UNIQUE_SUFFIX = "_unique";
+
     /**
      * 标记任务为正常执行状态
      */

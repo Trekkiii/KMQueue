@@ -2,6 +2,7 @@ package com.kingsoft.wps.mail.queue;
 
 import com.alibaba.fastjson.JSON;
 import com.kingsoft.wps.mail.distributed.lock.DistributedLock;
+import com.kingsoft.wps.mail.queue.config.Constant;
 import redis.clients.jedis.Jedis;
 
 import java.util.List;
@@ -17,8 +18,6 @@ public class RedisTaskQueue extends TaskQueue {
     private static final Logger logger = Logger.getLogger(RedisTaskQueue.class.getName());
 
     private static final int REDIS_DB_IDX = 0;
-    //    private static final String DISTR_LOCK_SUFFIX = "_lock";
-    private static final String UNIQUE_SUFFIX = "_unique";
 
     /**
      * 任务队列名称
@@ -81,7 +80,7 @@ public class RedisTaskQueue extends TaskQueue {
             if (this.getMode().equals(KMQueueAdapter.SAFE) && task.isUnique()) {// 唯一性任务
 
                 // Integer reply, specifically: 1 if the new element was added 0 if the element was already a member of the set
-                Long isExist = jedis.sadd(this.name + UNIQUE_SUFFIX, task.getId());
+                Long isExist = jedis.sadd(this.name + Constant.UNIQUE_SUFFIX, task.getId());
                 if (isExist == 0) {
                     return null;
                 }
@@ -181,7 +180,7 @@ public class RedisTaskQueue extends TaskQueue {
                 jedis.lrem(kmQueueAdapter.getBackUpQueueName(), 0, taskJson);
 
                 // 删除该任务的存在标记
-                jedis.srem(this.name + UNIQUE_SUFFIX, task.getId());
+                jedis.srem(this.name + Constant.UNIQUE_SUFFIX, task.getId());
             } catch (Throwable e) {
                 logger.info(e.getMessage());
                 e.printStackTrace();

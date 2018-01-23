@@ -3,6 +3,7 @@ package com.kingsoft.wps.mail.queue.backup;
 import com.alibaba.fastjson.JSON;
 import com.kingsoft.wps.mail.queue.KMQueueAdapter;
 import com.kingsoft.wps.mail.queue.Task;
+import com.kingsoft.wps.mail.queue.config.Constant;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Transaction;
 
@@ -113,7 +114,12 @@ public class RedisBackupQueue extends BackupQueue {
         try {
             jedis = kmQueueAdapter.getResource(REDIS_DB_IDX);
             String taskJson = JSON.toJSONString(task);
+
+            // 删除备份队列中的任务
             jedis.lrem(this.name, 0, taskJson);
+
+            // 删除该任务的存在标记
+            jedis.srem(task.getQueue() + Constant.UNIQUE_SUFFIX, task.getId());
         } catch (Throwable e) {
             logger.info(e.getMessage());
             e.printStackTrace();
