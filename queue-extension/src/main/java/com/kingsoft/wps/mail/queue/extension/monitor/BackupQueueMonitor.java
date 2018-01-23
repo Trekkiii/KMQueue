@@ -65,6 +65,11 @@ public class BackupQueueMonitor extends KMQueueAdapter {
     private AliveDetectHandler aliveDetectHandler;
 
     /**
+     * 备份队列
+     */
+    private BackupQueue backupQueue;
+
+    /**
      * 构造方法私有化，防止外部调用
      */
     private BackupQueueMonitor() {
@@ -104,13 +109,8 @@ public class BackupQueueMonitor extends KMQueueAdapter {
      * 启动监控
      */
     public void monitor() {
-
-        BackupQueue backupQueue = null;
         Task task;
-
         try {
-            backupQueue = new RedisBackupQueue(this);// 备份队列
-
             String backUpQueueName = this.getBackUpQueueName();
             DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             logger.info("Backup queue[" + backUpQueueName + "]Monitoring begins：" + format.format(new Date()));
@@ -493,6 +493,9 @@ public class BackupQueueMonitor extends KMQueueAdapter {
             queueMonitor.aliveTimeout = this.aliveTimeout;
             queueMonitor.protectedTimeout = this.protectedTimeout;
             queueMonitor.aliveDetectHandler = this.aliveDetectHandler;
+
+            queueMonitor.backupQueue = new RedisBackupQueue(queueMonitor);// 备份队列
+
             return queueMonitor;
         }
     }
