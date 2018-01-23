@@ -7,7 +7,7 @@ import com.kingsoft.wps.mail.queue.TaskHandler;
  */
 public class TaskConsumersHandler implements TaskHandler {
     @Override
-    public void handle(String data) {
+    public void handle(String data, Object... params) {
         System.out.println("获取任务数据：" + data);
     }
 }

@@ -5,5 +5,10 @@ package com.kingsoft.wps.mail.queue;
  */
 public interface TaskHandler {
 
-    void handle(String data);
+    /**
+     * 业务处理
+     * @param data task任务数据
+     * @param params 业务自定义参数
+     */
+    void handle(String data, Object... params);
 }

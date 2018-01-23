@@ -173,19 +173,25 @@ public void popTaskTest() {
 task.doTask(kmQueueManager, TaskHandler.class)
 ```
 
-_**如果业务处理抛出异常，队列也将其当作任务执行完成处理，**
+此外，`doTask`方法还支持业务传参，通过第三个参数实现`params`。
+
+```java
+task.doTask(kmQueueManager, TaskHandler.class, params)
+```
+
+_**如果业务处理抛出异常，队列也将其当作任务执行完成处理，**_
 
 并通过`taskQueue.finishTask(this)`完成任务。
 
 ```java
-public void doTask(KMQueueManager kmQueueManager, Class clazz) {
+public void doTask(KMQueueManager kmQueueManager, Class clazz, Object... params) {
 
     // 获取任务所属队列
     TaskQueue taskQueue = kmQueueManager.getTaskQueue(this.getQueue());
     String queueMode = taskQueue.getMode();
     if (KMQueueManager.SAFE.equals(queueMode)) {// 安全队列
         try {
-            handleTask(clazz);
+            handleTask(clazz, params);
         } catch (Throwable e) {
             e.printStackTrace();
         }

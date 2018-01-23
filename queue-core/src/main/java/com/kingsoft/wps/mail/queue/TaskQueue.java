@@ -47,5 +47,5 @@ public abstract class TaskQueue {
      *
      * @param task 队列任务
      */
-    protected abstract void finishTask(Task task);
+    public abstract void finishTask(Task task);
 }

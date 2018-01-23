@@ -221,16 +221,17 @@ public class Task implements Serializable {
      * <p>
      * 任务状态state不变
      *
-     * @param clazz 任务处理器class
+     * @param clazz  任务处理器class
+     * @param params 业务参数
      */
-    public void doTask(KMQueueManager kmQueueManager, Class clazz) {
+    public void doTask(KMQueueManager kmQueueManager, Class clazz, Object... params) {
 
         // 获取任务所属队列
         TaskQueue taskQueue = kmQueueManager.getTaskQueue(this.getQueue());
         String queueMode = taskQueue.getMode();
         if (KMQueueManager.SAFE.equals(queueMode)) {// 安全队列
             try {
-                handleTask(clazz);
+                handleTask(clazz, params);
             } catch (Throwable e) {
                 e.printStackTrace();
             }
@@ -246,10 +247,10 @@ public class Task implements Serializable {
      *
      * @param clazz 任务执行器
      */
-    private void handleTask(Class clazz) {
+    private void handleTask(Class clazz, Object... params) {
         try {
             TaskHandler handler = (TaskHandler) clazz.newInstance();
-            handler.handle(this.data);
+            handler.handle(this.data, params);
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }

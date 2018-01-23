@@ -168,7 +168,7 @@ public class RedisTaskQueue extends TaskQueue {
     }
 
     @Override
-    protected void finishTask(Task task) {
+    public void finishTask(Task task) {
         if (KMQueueManager.SAFE.equals(getMode())) {
             // 安全队列
             Jedis jedis = null;
