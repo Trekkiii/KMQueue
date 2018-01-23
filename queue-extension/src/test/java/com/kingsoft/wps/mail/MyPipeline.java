@@ -8,7 +8,7 @@ import com.kingsoft.wps.mail.queue.extension.monitor.Pipeline;
 /**
  * Created by 刘春龙 on 2018/1/22.
  */
-public class TaskPipeline implements Pipeline {
+public class MyPipeline implements Pipeline {
     @Override
     public void process(TaskQueue taskQueue, Task task) {
         System.out.println("Task is timeout，task - " + JSON.toJSON(task));

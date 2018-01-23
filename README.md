@@ -8,6 +8,12 @@
 
 还有其他问题可以提issue。
 
+**更新历史**：
+
+2018年1月23日：新增健康检测
+    防止执行耗时久的任务被备份队列监听检测到并当作失败任务重试。
+    但需要用户自行实现健康检测的逻辑，后续考虑通过zookeeper实现健康上报。
+
 ## 设计
 
 ### 序列图
@@ -111,6 +117,19 @@ public Builder(Pool<Jedis> pool, String... queues)
     - 任务state标记为"retry"；
     - 重试次数+1；
 
+#### 健康检查
+
+检查正在执行的任务是否还在执行（存活）， 
+
+为了防止耗时比较久的任务（任务的执行时间超出了通过队列管理器配置的任务执行超时时间 - 默认值：com.kingsoft.wps.mail.queue.config.Constant.PROTECTED_TIMEOUT） 
+会被备份队列监听器检测到并重新放入任务队列执行（因为备份队列监听器会把超出通过队列管理器配置的任务执行超时时间的任务当作是失败的任务（参考 什么是失败任务？）并进行重试）。
+
+通过这种检测机制，可以保证check(Task)返回为true的任务（任务还在执行）不会被备份队列监听器重新放入任务队列重试。
+这里只是提供一个接口，用户需要自己实现执行任务的健康检测。 
+
+这里只是提供一个接口，用户需要自己实现执行任务的健康检测。 一个比较简单的实现方式就是起一个定时job，每隔n毫秒检查线程中正在执行任务的状态，在redis中以 "任务的id + ALIVE_KEY_SUFFIX" 为key，ttl 为 n+m 毫秒（m < n, m用于保证两次job的空窗期），标记正在执行的任务。 
+然后AliveDetectHandler的实现类根据task去检查redis中是否存在该key，如果存在，返回true
+
 ## 使用Demo
 
 ### 生产任务
@@ -157,12 +176,12 @@ public void popTaskTest() {
     kmQueueManager.init();
 
     // 1.获取队列
-    TaskQueue taskQueue = kmQueueManager.getTaskQueue("worker2_queue");
+    TaskQueue taskQueue = kmQueueManager.getTaskQueue("worker1_queue");
     // 2.获取任务
     Task task = taskQueue.popTask();
     // 业务处理放到TaskConsumersHandler里
     if (task != null) {
-        task.doTask(kmQueueManager, TaskConsumersHandler.class);
+        task.doTask(kmQueueManager, MyTaskHandler.class);
     }
 }
 ```
@@ -223,8 +242,10 @@ _**不会再进行任务重试操作。**_
 @Test
 public void monitorTaskTest() {
 
+    // 健康检测
+    MyAliveDetectHandler detectHandler = new MyAliveDetectHandler();
     // 任务彻底失败后的处理，需要实现Pipeline接口，自行实现处理逻辑
-    TaskPipeline taskPipeline = new TaskPipeline();
+    MyPipeline pipeline = new MyPipeline();
     // 根据任务队列的名称构造备份队列的名称，注意：这里的任务队列参数一定要和KMQueueManager构造时传入的一一对应。
     String backUpQueueName = KMQUtils.genBackUpQueueName("worker1_queue", "worker2_queue:safe");
     // 构造Monitor监听器
@@ -235,18 +256,22 @@ public void monitorTaskTest() {
             .setAliveTimeout(Constant.ALIVE_TIMEOUT)
             .setProtectedTimeout(Constant.PROTECTED_TIMEOUT)
             .setRetryTimes(Constant.RETRY_TIMES)
-            .setPipeline(taskPipeline).build();
+            .registerAliveDetectHandler(detectHandler)
+            .setPipeline(pipeline).build();
     // 执行监听
     backupQueueMonitor.monitor();
 }
 ```
 
-## 补充
-
 重要的事情说三遍：
 
-如果指定了队列的模式为安全队列，一定要开启**备份队列监控**！！！
+如果指定了队列的模式为安全队列，一定要开启**备份队列监控**！！！一定要开启**备份队列监控**！！！一定要开启**备份队列监控**！！！
 
-如果指定了队列的模式为安全队列，一定要开启**备份队列监控**！！！
+## QA
 
-如果指定了队列的模式为安全队列，一定要开启**备份队列监控**！！！
+### 什么是失败任务？
+
+任务执行抛出异常是业务级的错误，队列不做干预，队列依旧把它当作是成功的任务。
+
+队列的重试只是针对消费任务的线程被kill掉或者服务器宕机等情况，此时该任务还没执行完，任务的消费者还没告诉队列任务执行完成了。
+此时备份队列监控会执行任务的重试。在这种情况下，任务才能定义为失败任务。

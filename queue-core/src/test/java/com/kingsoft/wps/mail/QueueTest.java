@@ -60,7 +60,7 @@ public class QueueTest {
         Task task = taskQueue.popTask();
         // 业务处理放到TaskConsumersHandler里
         if (task != null) {
-            task.doTask(kmQueueManager, TaskConsumersHandler.class);
+            task.doTask(kmQueueManager, MyTaskHandler.class);
         }
     }
 

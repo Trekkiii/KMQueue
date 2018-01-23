@@ -27,7 +27,7 @@ public class Constant {
      * 该值只针对安全队列起作用
      */
     @Deprecated
-    public static final long ALIVE_TIMEOUT = 5 * 60 * 1000;
+    public static final long ALIVE_TIMEOUT = 10 * 60 * 1000;
 
     /**
      * 任务执行的超时时间（一次执行）。单位：ms

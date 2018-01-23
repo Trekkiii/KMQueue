@@ -60,6 +60,11 @@ public class BackupQueueMonitor extends KMQueueAdapter {
     private long protectedTimeout;
 
     /**
+     * 健康检查
+     */
+    private AliveDetectHandler aliveDetectHandler;
+
+    /**
      * 构造方法私有化，防止外部调用
      */
     private BackupQueueMonitor() {
@@ -113,6 +118,7 @@ public class BackupQueueMonitor extends KMQueueAdapter {
             while (task != null &&
                     !backUpQueueName.equals(task.getQueue()) &&
                     !RedisBackupQueue.MARKER.equals(task.getType())) {
+
                 /**
                  * 判断任务状态，分别处理
                  * 1. 任务执行超时，且重试次数大于等于retry指定次数，则持久化到数据库
@@ -136,8 +142,20 @@ public class BackupQueueMonitor extends KMQueueAdapter {
 
                 long taskExcTimeMillis = status.getExcTimestamp();// 任务执行的时间戳
                 intervalTimeMillis = currentTimeMillis - taskExcTimeMillis;// 任务此次执行时间
-                // TODO 增加心跳健康检测
+
                 if (intervalTimeMillis > this.protectedTimeout) {// 任务执行超时
+
+                    // 增加心跳健康检测
+                    if (aliveDetectHandler != null) {
+
+                        boolean isAlive = aliveDetectHandler.check(this, task);
+                        if (isAlive) {// 当前任务还在执行
+                            // 继续从备份队列中取出任务，进入下一次循环
+                            task = backupQueue.popTask();
+                            continue;
+                        }
+                    }
+
                     Task originTask = JSON.parseObject(JSON.toJSONString(task), Task.class);// 保留原任务数据，用于删除该任务
 
                     if (status.getRetry() < this.getRetryTimes()) {
@@ -254,6 +272,11 @@ public class BackupQueueMonitor extends KMQueueAdapter {
          * 不设置默认为 Long.MAX_VALUE
          */
         private long protectedTimeout;
+
+        /**
+         * 健康检查
+         */
+        private AliveDetectHandler aliveDetectHandler;
 
         /**
          * 创建Builder对象
@@ -429,6 +452,17 @@ public class BackupQueueMonitor extends KMQueueAdapter {
             return this;
         }
 
+        /**
+         * 注册健康检查
+         *
+         * @param aliveDetectHandler 健康检测实现
+         * @return 返回Builder
+         */
+        public Builder registerAliveDetectHandler(AliveDetectHandler aliveDetectHandler) {
+            this.aliveDetectHandler = aliveDetectHandler;
+            return this;
+        }
+
         public BackupQueueMonitor build() {
 
             BackupQueueMonitor queueMonitor = new BackupQueueMonitor();
@@ -458,6 +492,7 @@ public class BackupQueueMonitor extends KMQueueAdapter {
             queueMonitor.pipeline = this.pipeline;
             queueMonitor.aliveTimeout = this.aliveTimeout;
             queueMonitor.protectedTimeout = this.protectedTimeout;
+            queueMonitor.aliveDetectHandler = this.aliveDetectHandler;
             return queueMonitor;
         }
     }
