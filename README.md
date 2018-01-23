@@ -119,6 +119,23 @@ public Builder(Pool<Jedis> pool, String... queues)
 
 #### 健康检查
 
+使用方式：
+
+```java
+// 健康检测
+MyAliveDetectHandler detectHandler = new MyAliveDetectHandler();
+...
+// 构造Monitor监听器
+BackupQueueMonitor backupQueueMonitor = new BackupQueueMonitor.Builder("127.0.0.1", 6379, backUpQueueName)
+        ...
+        .registerAliveDetectHandler(detectHandler)
+        .build();
+// 执行监听
+backupQueueMonitor.monitor();
+```
+
+`registerAliveDetectHandler()`方法可以设置Null，则不会启用健康检测。
+
 检查正在执行的任务是否还在执行（存活）， 
 
 为了防止耗时比较久的任务（任务的执行时间超出了通过队列管理器配置的任务执行超时时间 - 默认值：com.kingsoft.wps.mail.queue.config.Constant.PROTECTED_TIMEOUT） 
@@ -127,7 +144,9 @@ public Builder(Pool<Jedis> pool, String... queues)
 通过这种检测机制，可以保证check(Task)返回为true的任务（任务还在执行）不会被备份队列监听器重新放入任务队列重试。
 这里只是提供一个接口，用户需要自己实现执行任务的健康检测。 
 
-这里只是提供一个接口，用户需要自己实现执行任务的健康检测。 一个比较简单的实现方式就是起一个定时job，每隔n毫秒检查线程中正在执行任务的状态，在redis中以 "任务的id + ALIVE_KEY_SUFFIX" 为key，ttl 为 n+m 毫秒（m < n, m用于保证两次job的空窗期），标记正在执行的任务。 
+目前健康检测机制还只是处于初步阶段，核心的检测逻辑还需要用户自行实现，这里只是提供一个接口。 
+
+一个比较简单的实现方式就是起一个定时job，每隔n毫秒检查线程中正在执行任务的状态，在redis中以 "任务的id + ALIVE_KEY_SUFFIX" 为key，ttl 为 n+m 毫秒（m < n, m用于保证两次job的空窗期），标记正在执行的任务。 
 然后AliveDetectHandler的实现类根据task去检查redis中是否存在该key，如果存在，返回true
 
 ## 使用Demo
