@@ -1,5 +1,7 @@
 # KMQueue
 
+[![Build Status](https://travis-ci.org/fnpac/KMQueue.svg?branch=master)](https://travis-ci.org/fnpac/KMQueue)
+
 该框架是基于redis实现的分布式队列，简单灵活。
 
 下面简单介绍下该队列的一些设计，如果还有其他不懂得地方可以参考源码和注释，代码中我加入了详尽的注释。
