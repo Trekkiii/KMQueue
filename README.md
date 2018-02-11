@@ -173,6 +173,8 @@ public void pushTaskTest() {
     String data = JSON.toJSONString(ob);
     // 参数 uid：如果业务需要区分队列任务的唯一性，请自行生成uid参数，
     // 否则队列默认使用uuid生成策略，这会导致即使data数据完全相同的任务也会被当作两个不同的任务处理。
+    // 参数 isUnique：是否是唯一任务，即队列中同一时刻只存在一个该任务。
+    // 只有当该任务所属队列是安全队列时才生效；如果为true，则通过uid判断任务的唯一性。
     // 参数 type：用于业务逻辑的处理，你可以根据不同的type任务类型，调用不同的handler去处理，可以不传。
     Task task = new Task(taskQueue.getName(), "", true, "", data, new Task.TaskStatus());
     // 3.将任务加入队列
